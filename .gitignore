@@ -101,3 +101,6 @@ example/.serverless/
 
 # TernJS port file
 .tern-port
+
+# build directory
+dist/

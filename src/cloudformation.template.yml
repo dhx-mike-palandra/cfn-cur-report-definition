@@ -1,5 +1,10 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: Custom Cost Usage ReportDefinition CloudFormation resource
+Parameters:
+  Runtime:
+    Type: String
+    AllowedPattern: '^nodejs.*'
+    Default: nodejs14.x
 Resources:
   CustomCostUsageReportDefinitionLambda:
     Metadata:
@@ -12,7 +17,8 @@ Resources:
       Description: Cloudformation custom resource for Cost Usage ReportDefinition
       Handler: index.handler
       Role: !GetAtt 'CustomCostUsageReportDefinitionLambdaExecutionRole.Arn'
-      Runtime: nodejs10.x
+      Runtime:
+        Ref: Runtime
       Timeout: 30
     Type: AWS::Lambda::Function
   CustomCostUsageReportDefinitionLambdaExecutionRole:
@@ -46,4 +52,11 @@ Resources:
                   - logs:PutLogEvents
                 Resource: !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*'
           PolicyName: !Sub 'CustomCostUsageReportDefinitionLambdaExecutionPolicy-${AWS::StackName}'
-    
+Outputs:
+  ServiceToken:
+    Description: ServiceToken value required by CloudFormation for custom resource declarations
+    Value:
+      Fn::GetAtt: CustomCostUsageReportDefinitionLambda.Arn
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-ServiceToken"
